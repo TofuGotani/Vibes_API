@@ -37,7 +37,7 @@ const getCats = (text: string[]): number => {
   const numberOfTexts = text.reduce(
     (accumulator, currentValue) => accumulator + currentValue
   ).length;
-  return Math.min(Math.max(Math.floor(numberOfTexts / 1000), 1), 3);
+  return Math.min(Math.max(Math.floor(numberOfTexts / 700), 1), 3);
 };
 
 function chooseText(text: string[]): { text: string; cats: number } {
