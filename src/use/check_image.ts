@@ -35,6 +35,11 @@ async function checkImage(
         width: MAX_LENGTH,
       };
     }
+  }else{
+    return {
+      height:metadata.height,
+      width:metadata.width
+    }
   }
 }
 

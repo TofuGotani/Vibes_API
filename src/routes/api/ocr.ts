@@ -10,12 +10,13 @@ const router = Router();
 
 router.post("/ocr", async (req: Request, res: Response, next: NextFunction) => {
     //TODO User 認証
-  
-    if (Buffer.isBuffer(req.body) === false) {
+
+    const img = Buffer.from(req.body)
+    if (Buffer.isBuffer(img) === false) {
       throw next(new httpErrors.BadRequest("no image"));
     }
   
-    const isChecked = await checkImage(req.body, {});
+    const isChecked = await checkImage(img, {});
   
     if (typeof isChecked === "string") {
       throw next(new httpErrors.BadRequest(isChecked));
@@ -26,10 +27,10 @@ router.post("/ocr", async (req: Request, res: Response, next: NextFunction) => {
       height: isChecked.height,
       extension: EXTENSION,
     };
-    const converted = await convertImage(req.body, options);
+    const converted = await convertImage(img, options);
     //TODO LINE API
   
-    return res.status(200).type("application/json").send({ msg: "success" });
+    return res.status(200).type("application/json").send(converted.toJSON());
   });
   
   export { router as ocrRouter };
