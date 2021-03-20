@@ -1,4 +1,5 @@
 import { text } from "express";
+import { MACADDR } from "sequelize/types";
 
 const praiseTexts = [
   // 条件分岐に対して
@@ -7,7 +8,7 @@ const praiseTexts = [
   "イエス、while！",
   "そのfor文仕上がってるよ！",
   // 変数宣言に対して
-  "ナイス変数！",
+  // { name: "ナイス変数！", weight: 10 },
 ];
 
 // 万能セリフ
@@ -23,7 +24,7 @@ const getRandomInt = (min: number, max: number) =>
   Math.floor(Math.random() * (max - min)) + min;
 
 const checkKeywords = (text: string[]): string[] => {
-  const ret = [];
+  const ret: string[] = [];
 
   if (text.includes("if")) ret.push(praiseTexts[0]);
   if (text.includes("while")) ret.push(praiseTexts[1]);
@@ -40,11 +41,23 @@ const getCats = (text: string[]): number => {
 };
 
 function chooseText(text: string[]): { text: string; cats: number } {
-  const candidate = commonPraiseTexts.concat(checkKeywords(text));
-  console.log(candidate);
-  
+  // const candidate = commonPraiseTexts.concat(checkKeywords(text));
+
+  const getItem = (commonPraiseTexts: string[], checkedKeywords: string[]) => {
+    console.log(commonPraiseTexts.concat(checkedKeywords));
+    if (checkedKeywords.length <= 0) {
+      return commonPraiseTexts[getRandomInt(0, commonPraiseTexts.length)];
+    } else {
+      if (Math.random() < 0.3) {
+        return commonPraiseTexts[getRandomInt(0, commonPraiseTexts.length)];
+      } else {
+        return checkedKeywords[getRandomInt(0, checkedKeywords.length)];
+      }
+    }
+  };
+
   return {
-    text: candidate[getRandomInt(0, candidate.length)],
+    text: getItem(commonPraiseTexts, checkKeywords(text)),
     cats: getCats(text),
   };
 }
