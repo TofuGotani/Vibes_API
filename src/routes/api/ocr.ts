@@ -6,6 +6,7 @@ import { convertImage } from "../../use/convert_images";
 import { v4 as uuidv4 } from "uuid";
 import HttpRequest from "request";
 import { IP } from "../../model/ip";
+import { chooseText } from "../../use/chooseText";
 
 const EXTENSION = "jpeg";
 
@@ -30,6 +31,7 @@ const controlAccess = () => {
   };
 
   const checkTime = () => {
+    // console.log(Date.now());
     if (Date.now() - time > REFRESHTIME) {
       reset();
       time = Date.now();
@@ -54,9 +56,17 @@ const controlAccess = () => {
 
 const managerAccess = controlAccess();
 
+console.log(IP);
 
 router.post("/ocr", async (req: Request, res: Response, next: NextFunction) => {
-
+  // const test = await IP.findAll()
+  //   .then((data) => {
+  //     console.log(data);
+  //   })
+  //   .catch((err) => {
+  //     console.log();
+  //     console.log(err);
+  //   });
   const ip = await IP.findOrCreate({
     where: { ip: req.ip },
     defaults: {
@@ -72,7 +82,9 @@ router.post("/ocr", async (req: Request, res: Response, next: NextFunction) => {
     .catch((err) => {
       console.warn(err);
     });
+
   console.log("ip addr", req.ip);
+
   managerAccess.setValues(
     ip.getDataValue("access_count"),
     ip.getDataValue("last_access_time")
@@ -93,6 +105,7 @@ router.post("/ocr", async (req: Request, res: Response, next: NextFunction) => {
   if (typeof isChecked === "string") {
     throw next(new httpErrors.BadRequest(isChecked));
   }
+
   const imgOptions: convertImageOptions = {
     width: isChecked.width,
     height: isChecked.height,
@@ -136,7 +149,11 @@ router.post("/ocr", async (req: Request, res: Response, next: NextFunction) => {
   };
 
   HttpRequest.post(ocrOptions, (err, resp, _body) => {
-    return res.status(200).type("application/json").send(resp.body);
+    const ocrResult = resp.body["images"][0]["fields"].map(
+      (val) => val["inferText"]
+    );
+    const ret = chooseText(ocrResult);
+    return res.status(200).type("application/json").send({ message: ret });
   });
 });
 

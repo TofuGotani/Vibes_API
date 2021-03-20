@@ -11,10 +11,6 @@ async function checkImage(
 
   const metadata = await sharp(buffer).metadata();
 
-  //   if (metadata.density < MIN_DPI) {
-  //     return "DPI is too low";
-  //   }
-
   const majorLength = Math.max(metadata.width, metadata.height);
 
   if (majorLength < MIN_LENGTH) {
