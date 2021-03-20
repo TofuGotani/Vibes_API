@@ -11,9 +11,9 @@ async function checkImage(
 
   const metadata = await sharp(buffer).metadata();
 
-  if (metadata.density < MIN_DPI) {
-    return "DPI is too low";
-  }
+  //   if (metadata.density < MIN_DPI) {
+  //     return "DPI is too low";
+  //   }
 
   const majorLength = Math.max(metadata.width, metadata.height);
 
@@ -35,11 +35,11 @@ async function checkImage(
         width: MAX_LENGTH,
       };
     }
-  }else{
+  } else {
     return {
-      height:metadata.height,
-      width:metadata.width
-    }
+      height: metadata.height,
+      width: metadata.width,
+    };
   }
 }
 

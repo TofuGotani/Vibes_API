@@ -4,8 +4,10 @@
     "module": "commonjs",
     "outDir": "./build",
     "esModuleInterop": true,
-    "typeRoots": ["node_modules/@types", "src/types"]
+    "typeRoots": ["node_modules/@types", "src/types"],
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.json", "src/**/*.js"],
   "exclude": ["node_modules"]
 }

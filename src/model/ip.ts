@@ -2,7 +2,7 @@ import { DataTypes, UUIDV4 } from "sequelize";
 
 import { sequelize } from "../sequelize";
 
-const IP = sequelize.define("IP", {
+const IP = sequelize.define("IPs", {
   id: {
     type: DataTypes.UUID,
     defaultValue: UUIDV4,

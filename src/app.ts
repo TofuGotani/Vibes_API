@@ -1,7 +1,6 @@
 import Express from "express";
 import session from "express-session";
 
-
 import { apiRouter } from "./routes/api";
 
 const app = Express();

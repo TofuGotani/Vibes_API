@@ -1,4 +1,4 @@
-import { NextFunction, request, Request, Response, Router } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import httpErrors from "http-errors";
 import { convertImageOptions } from "../../types/use";
 import { checkImage } from "../../use/check_image";
@@ -30,7 +30,6 @@ const controlAccess = () => {
   };
 
   const checkTime = () => {
-    // console.log(Date.now());
     if (Date.now() - time > REFRESHTIME) {
       reset();
       time = Date.now();
@@ -55,7 +54,9 @@ const controlAccess = () => {
 
 const managerAccess = controlAccess();
 
+
 router.post("/ocr", async (req: Request, res: Response, next: NextFunction) => {
+
   const ip = await IP.findOrCreate({
     where: { ip: req.ip },
     defaults: {
@@ -64,16 +65,21 @@ router.post("/ocr", async (req: Request, res: Response, next: NextFunction) => {
       access_count: 0,
       last_access_time: Date.now(),
     },
-  }).then(([ip, _]) => {
-    return ip;
-  });
-
+  })
+    .then(([ip, _]) => {
+      return ip;
+    })
+    .catch((err) => {
+      console.warn(err);
+    });
+  console.log("ip addr", req.ip);
   managerAccess.setValues(
     ip.getDataValue("access_count"),
     ip.getDataValue("last_access_time")
   );
 
   managerAccess.checkTime();
+  managerAccess.add();
 
   const base64img = req.body["data"].split(";base64,").pop();
   const img = Buffer.from(base64img, "base64");
@@ -92,15 +98,24 @@ router.post("/ocr", async (req: Request, res: Response, next: NextFunction) => {
     height: isChecked.height,
     extension: EXTENSION,
   };
-  const converted = await convertImage(img, imgOptions);
 
   if (managerAccess.checkCount()) {
     throw next(new httpErrors.BadRequest("too many requests !"));
   }
+
+  IP.update(
+    {
+      access_count: managerAccess.getCount(),
+      last_access_time: managerAccess.getTime(),
+    },
+    { where: { id: ip.getDataValue("id") } }
+  );
+
+  const converted = await convertImage(img, imgOptions);
+
   //TODO LINE API
   const ocrOptions = {
-    uri:
-      process.env.URL,
+    uri: process.env.URL,
     headers: {
       "X-OCR-SECRET": process.env.SECRET,
       "Content-Type": "application/json",
@@ -121,16 +136,6 @@ router.post("/ocr", async (req: Request, res: Response, next: NextFunction) => {
   };
 
   HttpRequest.post(ocrOptions, (err, resp, _body) => {
-    managerAccess.add();
-    // console.log(resp.body);
-
-    IP.update(
-      {
-        access_count: managerAccess.getCount(),
-        last_access_time: managerAccess.getTime(),
-      },
-      { where: { id: ip.getDataValue("id") } }
-    );
     return res.status(200).type("application/json").send(resp.body);
   });
 });
