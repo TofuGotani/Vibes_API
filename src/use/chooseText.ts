@@ -1,40 +1,52 @@
+import { text } from "express";
+
 const praiseTexts = [
-    // 条件分岐に対して
-    "条件分岐、キレてるよ！",
-    // 繰り返し処理に対して
-    "イエス、while！",
-    "そのfor文仕上がってるよ！",
-    // 変数宣言に対して
-    "ナイス変数！",
-  ];
+  // 条件分岐に対して
+  "条件分岐、キレてるよ！",
+  // 繰り返し処理に対して
+  "イエス、while！",
+  "そのfor文仕上がってるよ！",
+  // 変数宣言に対して
+  "ナイス変数！",
+];
+
+// 万能セリフ
+const commonPraiseTexts = [
+  "ナイスコード！",
+  "指先に鬼神が宿ってる！",
+  "脳にちっちゃいコンパイラ乗せてんのかい！",
+  "賢さの大洪水！",
+  "コーディングの鬼！",
+];
+
+const getRandomInt = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min)) + min;
+
+const checkKeywords = (text: string[]): string[] => {
+  const ret = [];
+
+  if (text.includes("if")) ret.push(praiseTexts[0]);
+  if (text.includes("while")) ret.push(praiseTexts[1]);
+  if (text.includes("for")) ret.push(praiseTexts[2]);
+
+  return ret;
+};
+
+const getCats = (text: string[]): number => {
+  const numberOfTexts = text.reduce(
+    (accumulator, currentValue) => accumulator + currentValue
+  ).length;
+  return Math.min(Math.max(Math.floor(numberOfTexts / 1000), 1), 3);
+};
+
+function chooseText(text: string[]): { text: string; cats: number } {
+  const candidate = commonPraiseTexts.concat(checkKeywords(text));
+  console.log(candidate);
   
-  // 万能セリフ
-  const commonPraiseTexts = [
-    "ナイスコード！",
-    "指先に鬼神が宿ってる！",
-    "脳にちっちゃいコンパイラ乗せてんのかい！",
-    "賢さの大洪水！",
-    "コーディングの鬼！",
-  ];
-  
-  const getRandomInt = (min: number, max: number) =>
-    Math.floor(Math.random() * (max - min)) + min;
-  
-  const checkKeywords = (text: string[]): string[] => {
-    const ret = [];
-  
-    if (text.includes("if")) ret.push(praiseTexts[0]);
-    if (text.includes("while")) ret.push(praiseTexts[1]);
-    if (text.includes("for")) ret.push(praiseTexts[2]);
-  
-    return ret;
+  return {
+    text: candidate[getRandomInt(0, candidate.length)],
+    cats: getCats(text),
   };
-  function chooseText(text: string[]): string {
-    const candidate = commonPraiseTexts.concat(checkKeywords(text));
-    console.log(candidate)
-  
-    return candidate[getRandomInt(0, candidate.length)];
-  }
-  
-  export { chooseText };
-  
+}
+
+export { chooseText };

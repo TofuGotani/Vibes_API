@@ -154,6 +154,7 @@ router.post("/ocr", async (req: Request, res: Response, next: NextFunction) => {
       (val) => val["inferText"]
     );
     const ret = chooseText(ocrResult);
+    console.log(ret)
     return res.status(200).type("application/json").send({ message: ret });
   });
 });
