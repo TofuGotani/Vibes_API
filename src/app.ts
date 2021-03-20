@@ -1,6 +1,7 @@
 import Express from "express";
 import session from "express-session";
 
+
 import { apiRouter } from "./routes/api";
 
 const app = Express();
@@ -28,6 +29,6 @@ app.use((_req, res, next) => {
   return next();
 });
 
-app.use("api/v1", apiRouter);
+app.use("/api/v1", apiRouter);
 
 export { app };
