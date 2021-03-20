@@ -74,7 +74,6 @@ router.post("/ocr", async (req: Request, res: Response, next: NextFunction) => {
   );
 
   managerAccess.checkTime();
-  // console.log(req.body);
 
   const base64img = req.body["data"].split(";base64,").pop();
   const img = Buffer.from(base64img, "base64");

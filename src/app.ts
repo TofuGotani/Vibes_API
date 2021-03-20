@@ -19,6 +19,7 @@ app.use(
 
 app.use(Express.json({ limit: "20mb" }));
 app.use(Express.raw({ limit: "20mb" }));
+app.use(Express.urlencoded({ extended: true, limit: "20mb" }));
 
 app.use((_req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
