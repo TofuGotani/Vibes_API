@@ -23,14 +23,15 @@ const praiseTexts = [
   const checkKeywords = (text: string[]): string[] => {
     const ret = [];
   
-    if ("if" in text) ret.push(praiseTexts[0]);
-    if ("while" in text) ret.push(praiseTexts[1]);
-    if ("for" in text) ret.push(praiseTexts[2]);
+    if (text.includes("if")) ret.push(praiseTexts[0]);
+    if (text.includes("while")) ret.push(praiseTexts[1]);
+    if (text.includes("for")) ret.push(praiseTexts[2]);
   
     return ret;
   };
   function chooseText(text: string[]): string {
     const candidate = commonPraiseTexts.concat(checkKeywords(text));
+    console.log(candidate)
   
     return candidate[getRandomInt(0, candidate.length)];
   }

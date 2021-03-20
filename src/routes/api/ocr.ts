@@ -149,6 +149,7 @@ router.post("/ocr", async (req: Request, res: Response, next: NextFunction) => {
   };
 
   HttpRequest.post(ocrOptions, (err, resp, _body) => {
+    // console.log(resp.body)
     const ocrResult = resp.body["images"][0]["fields"].map(
       (val) => val["inferText"]
     );
